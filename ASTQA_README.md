@@ -21,8 +21,11 @@
 ### Anggota Kelompok
 
 | No| NIM          | Nama Lengkap      | Peran       | Kontribusi                                             |
+
 | 1 | 105841104923 | ASWAN ALAUDDIN    | Lead QA     | Comprehensive testing, documentation, video production |
+
 | 2 | 105841104023 | MUH. ARYO ZAKARIA | QA Engineer | Test case design, automation testing                   |
+
 | 3 | 105841104723 | MUH. ARSY AVIV    | QA Tester   | Manual testing, UAT execution, reporting               |
 
 ## 📋 TABLE OF CONTENTS
