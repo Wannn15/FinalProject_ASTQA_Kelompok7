@@ -18,6 +18,8 @@
 
 | **Demo Instagram Reels** | https://www.instagram.com/reel/Db2dwibSVhP/?igsh=MWw2ZnJtb2JxMXdocQ== |
 
+
+
 ### Anggota Kelompok
 
 | No| NIM          | Nama Lengkap      | Peran       | Kontribusi                                             |
@@ -27,6 +29,7 @@
 | 2 | 105841104023 | MUH. ARYO ZAKARIA | QA Engineer | Test case design, automation testing                   |
 
 | 3 | 105841104723 | MUH. ARSY AVIV    | QA Tester   | Manual testing, UAT execution, reporting               |
+
 
 ## 📋 TABLE OF CONTENTS
 
