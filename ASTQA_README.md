@@ -14,9 +14,9 @@
 
 | **Repository Objek Uji** | https://github.com/Wannn15/FinalProject_ASTQA_Kelompok7  |
 
-| **Demo YouTube**         | https://youtu.be/zO3ZocPLjU4                             |
+| **Demo YouTube**         |                              |
 
-| **Demo Instagram Reels** | https://www.instagram.com/reel/Db2dwibSVhP/?igsh=MWw2ZnJtb2JxMXdocQ== |
+| **Demo Instagram Reels** |  |
 
 
 
