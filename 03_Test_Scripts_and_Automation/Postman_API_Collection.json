@@ -1,0 +1,878 @@
+{
+  "info": {
+    "name": "Sistem Informasi Sekolah - API Testing",
+    "description": "Postman collection for testing School Information System APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Login response has required fields', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.equal(true);",
+                  "    pm.expect(jsonData.data.user_id).to.be.a('number');",
+                  "    pm.expect(jsonData.data.username).to.equal('admin');",
+                  "    pm.expect(jsonData.data.role).to.equal('Admin');",
+                  "});",
+                  "",
+                  "// Save session token for subsequent requests",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set('session_token', jsonData.session_token);",
+                  "pm.environment.set('user_id', jsonData.data.user_id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"username\\\": \\\"admin\\\",\\n  \\\"password\\\": \\\"admin123\\\"\\n}"
+            },
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/auth/process_login.php",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "auth", "process_login.php"]
+            }
+          }
+        },
+        {
+          "name": "Teacher Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Teacher login successful', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.role).to.equal('Guru');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"username\\\": \\\"guru\\\",\\n  \\\"password\\\": \\\"guru123\\\"\\n}"
+            },
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/auth/process_login.php",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "auth", "process_login.php"]
+            }
+          }
+        },
+        {
+          "name": "Invalid Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 401', function() {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test('Error message displayed for invalid credentials', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.equal(false);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"username\\\": \\\"admin\\\",\\n  \\\"password\\\": \\\"wrongpassword\\\"\\n}"
+            },
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/auth/process_login.php",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "auth", "process_login.php"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/auth/logout.php",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "auth", "logout.php"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Get All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains user list', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "    pm.expect(jsonData.pagination.total).to.be.a('number');",
+                  "});",
+                  "",
+                  "pm.test('User objects have required properties', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data.length > 0) {",
+                  "        var user = jsonData.data[0];",
+                  "        pm.expect(user).to.have.property('user_id');",
+                  "        pm.expect(user).to.have.property('username');",
+                  "        pm.expect(user).to.have.property('role');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/users/index.php?page=1&limit=10",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "users", "index.php"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create New User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('User created with correct data', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.equal(true);",
+                  "    pm.expect(jsonData.data.username).to.equal('testuser001');",
+                  "    pm.expect(jsonData.data.role).to.equal('Guru');",
+                  "});",
+                  "",
+                  "// Save created user ID for future requests",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set('created_user_id', jsonData.data.user_id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"username\\\": \\\"testuser001\\\",\\n  \\\"password\\\": \\\"SecurePass123\\\",\\n  \\\"email\\\": \\\"test@school.com\\\",\\n  \\\"role\\\": \\\"Guru\\\"\\n}"
+            },
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/users/tambah.php",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "users", "tambah.php"]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('User updated successfully', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.equal(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"email\\\": \\\"newemail@school.com\\\",\\n  \\\"is_active\\\": true\\n}"
+            },
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/users/edit.php?id={{created_user_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "users", "edit.php"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{created_user_id}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('User deleted successfully', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.equal(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/users/hapus.php?id={{created_user_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "users", "hapus.php"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "{{created_user_id}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Student Management",
+      "item": [
+        {
+          "name": "Get All Students",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Student list contains array', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/students/index.php?page=1&limit=10",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "students", "index.php"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create New Student",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.environment.set('created_student_id', jsonData.data.student_id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"name\\\": \\\"Budi Santoso Test\\\",\\n  \\\"nis\\\": \\\"2024-TEST-001\\\",\\n  \\\"nisn\\\": \\\"123456789TEST\\\",\\n  \\\"date_of_birth\\\": \\\"2010-05-15\\\",\\n  \\\"gender\\\": \\\"M\\\",\\n  \\\"address\\\": \\\"Jl. Test No. 123\\\",\\n  \\\"phone_parent\\\": \\\"081234567890\\\",\\n  \\\"class_id\\\": 1\\n}"
+            },
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/students/tambah.php",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "students", "tambah.php"]
+            }
+          }
+        },
+        {
+          "name": "Search Students by Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Search returns filtered results', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/students/index.php?search=Budi",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "students", "index.php"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "Budi"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Students CSV",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('CSV content type returned', function() {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('text/csv');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/students/export.php",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "students", "export.php"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attendance Management",
+      "item": [
+        {
+          "name": "Teacher Schedules Today",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Schedules returned as array', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/teacher/attendance/index.php",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "teacher", "attendance", "index.php"]
+            }
+          }
+        },
+        {
+          "name": "Input Attendance",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Attendance recorded successfully', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.equal(true);",
+                  "    pm.expect(jsonData.data.total_records).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"schedule_id\\\": 1,\\n  \\\"attendance_date\\\": \\\"2024-08-10\\\",\\n  \\\"attendance_records\\\": [\\n    {\\n      \\\"student_id\\\": 1,\\n      \\\"status\\\": \\\"Hadir\\\"\\n    },\\n    {\\n      \\\"student_id\\\": 2,\\n      \\\"status\\\": \\\"Sakit\\\",\\n      \\\"notes\\\": \\\"Demam tinggi\\\"\\n    },\\n    {\\n      \\\"student_id\\\": 3,\\n      \\\"status\\\": \\\"Izin\\\",\\n      \\\"notes\\\": \\\"Acara keluarga\\\"\\n    },\\n    {\\n      \\\"student_id\\\": 4,\\n      \\\"status\\\": \\\"Alfa\\\"\\n    }\\n  ]\\n}"
+            },
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/teacher/attendance/input.php",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "teacher", "attendance", "input.php"]
+            }
+          }
+        },
+        {
+          "name": "Attendance History",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Attendance history contains records', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/teacher/attendance/history.php?start_date=2024-01-01&end_date=2024-08-31",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "teacher", "attendance", "history.php"],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-08-31"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Attendance Report",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Report contains summary and details', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data).to.have.property('summary');",
+                  "    pm.expect(jsonData.data).to.have.property('details');",
+                  "    pm.expect(jsonData.data.summary).to.have.property('total_sessions');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/reports/index.php?start_date=2024-01-01&end_date=2024-08-31&class_id=1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "reports", "index.php"],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-08-31"
+                },
+                {
+                  "key": "class_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Attendance Report",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('CSV file generated', function() {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('text/csv');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/reports/export.php?start_date=2024-01-01&end_date=2024-08-31&class_id=1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "reports", "export.php"],
+              "query": [
+                {
+                  "key": "start_date",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2024-08-31"
+                },
+                {
+                  "key": "class_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Security Tests",
+      "item": [
+        {
+          "name": "SQL Injection Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('SQL injection attempt should be rejected', function() {",
+                  "    var jsonData = pm.response.json();",
+                  "    // Should only return exact match, not all records",
+                  "    pm.expect(jsonData.data.length).to.equal(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/students/index.php?search=2024001' OR '1'='1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "students", "index.php"],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "2024001' OR '1'='1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Unauthorized Access Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Unauthorized request should be rejected', function() {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/users/index.php",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "users", "index.php"]
+            }
+          }
+        },
+        {
+          "name": "Access Control Test - Teacher Admin Access",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Teacher should not access admin panel', function() {",
+                  "    pm.response.to.have.status(403);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{teacher_session_token}}"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost/MID%20SCABLE/admin/dashboard.php",
+              "protocol": "http",
+              "host": ["localhost"],
+              "path": ["MID SCABLE", "admin", "dashboard.php"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "session_token",
+      "value": ""
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "key": "created_user_id",
+      "value": ""
+    },
+    {
+      "key": "created_student_id",
+      "value": ""
+    },
+    {
+      "key": "teacher_session_token",
+      "value": ""
+    }
+  ]
+}
