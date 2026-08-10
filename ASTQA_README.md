@@ -5,11 +5,17 @@
 
 ## 👥 IDENTITAS KELOMPOK
 | **Kelompok**             | 7                                                        |
+
 | **Kelas**                | 6B RPL                                                   |
+
 | **Mata Kuliah**          | Advanced Software Testing and Quality Assurance (ASTQA)  |
+
 | **Objek Pengujian**      | Web Sistem Absensi ( Proyek MID Scalable System Design ) |
+
 | **Repository Objek Uji** | https://github.com/Wannn15/FinalProject_ASTQA_Kelompok7  |
+
 | **Demo YouTube**         | https://youtu.be/zO3ZocPLjU4                             |
+
 | **Demo Instagram Reels** | https://www.instagram.com/reel/Db2dwibSVhP/?igsh=MWw2ZnJtb2JxMXdocQ== |
 
 ### Anggota Kelompok
